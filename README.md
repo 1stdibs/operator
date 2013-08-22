@@ -8,4 +8,5 @@ inspired from ben alman's original pub/sub [gist](https://gist.github.com/cowboy
 
 ---
 
-
+# Testing
+Tests are run using [testem](https://github.com/airportyh/testem).  Please refer to their docs for setting that up.

@@ -1,0 +1,8 @@
+{
+    "src_files": [
+        "tests/lib/jquery.min.js",
+        "tests/lib/jasmine-jquery.js",
+        "src/jquery.operator.js",
+        "tests/spec/operator_spec.js"
+    ]
+}

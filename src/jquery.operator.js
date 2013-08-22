@@ -21,46 +21,55 @@
         $.operator = originalOperator;
         return operator;
     };
-    $.each({
-        "subscribe" : "on",
-        "ever" : "on",
-        "once" : "one",
-        "onceEver" : "one",
-        "unsubscribe" : "off",
-        "publish" : "trigger"
-    }, function ( fn, api ) {
-        operator[ fn ] = function () {
-            o[ api ].apply( o, arguments );
-            if (typeof arguments[0] === 'string') {
-                var args = Array.prototype.slice.call(arguments),
-                    // space delimited events
-                    eventNames = args[0].split(' ');
-                if (api === 'trigger') {
-                    //We need to keep a record of fired events for `ever`'s sake
-                    $.each(eventNames, function (i, eventName) {
-                        fired[eventName] = args;
-                    });
-                }
-                if ((fn === 'ever' || fn === 'onceEver') && typeof args[1] === 'function') {
-                    //If we're binding `ever`/`onceEver`, then check the `fired` hash for a past occurrence
-                    $.each(eventNames, function (i, eventName) {
-                        if (fired[eventName]) {
-                            args[1].apply(o, fired[eventName]);
-                            if (fn === 'onceEver') {
-                                //If this was a onceEver, we need to take it back off now
-                                o.off(eventName, args[1]);
+    $.each(
+        {
+            "subscribe" : "on",
+            "ever" : "on",
+            "once" : "one",
+            "onceEver" : "one",
+            "unsubscribe" : "off",
+            "publish" : "trigger"
+        },
+        /**
+         * @param fn {string} method name to attach to the plugin (aka: key)
+         * @param api {string} Mapped jQuery method name that `fn` refers to (aka: value)
+         */
+        function ( fn, api ) {
+            operator[ fn ] = function () {
+                o[ api ].apply( o, arguments );
+                if (typeof arguments[0] === 'string') {
+                    var args = Array.prototype.slice.call(arguments),
+                        // space delimited events
+                        eventNames = args[0].split(' ');
+                    if (api === 'trigger') {
+                        // We need to keep a record of fired events for `ever`'s sake
+                        $.each(eventNames, function (i, eventName) {
+                            fired[eventName] = args;
+                        });
+                    }
+                    if ((fn === 'ever' || fn === 'onceEver') && typeof args[1] === 'function') {
+                        // If we're binding `ever`/`onceEver`, then check the `fired` hash for a past occurrence
+                        $.each(eventNames, function (i, eventName) {
+                            if (fired[eventName]) {
+                                args[1].apply(o, fired[eventName]);
+                                if (fn === 'onceEver') {
+                                    //If this was a onceEver, we need to take it back off now
+                                    o.off(eventName, args[1]);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-            }
-        };
-    });
+            };
+        }
+    );
     /**
      * Takes list of publish event names, and returns a promise for
      * when all of them have ever occurred
      * e.g.
-     *      $.subWhen('foo', 'bar').then(function () { console.log('STUFF GETS DONE!'); });
+     *      $.operator.subWhen('foo', 'bar').then(function () {
+     *          console.log('STUFF GETS DONE!');
+     *      });
      *      $.operator.publish('foo');
      *      // subscribers to 'foo' do something
      *      $.operator.publish('bar');
@@ -73,7 +82,7 @@
         var promises = [];
         $.each(arguments, function (i, eventName) {
             var def = $.Deferred();
-            $.onceEver(eventName, function () {
+            $.operator.onceEver(eventName, function () {
                 def.resolve.apply(def, arguments);
             });
             promises.push(def.promise());
