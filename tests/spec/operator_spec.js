@@ -120,4 +120,9 @@ describe('operator pub/sub on steroids', function() {
         $.operator.publish("test:pubsub2");
         expect(count).toBe(2);
     });
+
+    xit("should work in noConflict mode", function () {
+
+    });
+
 });
