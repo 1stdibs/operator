@@ -22,23 +22,19 @@ describe('operator pub/sub on steroids', function() {
 
     beforeEach(function () {
         obj = new Klass;
+        spyOn(obj, 'staticMethod');
     });
 
     it("should not call function that is not subscribed", function() {
-        spyOn(obj, 'staticMethod');
         $.operator.publish('test:pubsub');
         expect(obj.staticMethod).not.toHaveBeenCalled();
     });
     it("should not call function that is subscribed after event is published", function() {
-        spyOn(obj, 'staticMethod');
-
         $.operator.publish('test:pubsub');
         $.operator.subscribe('test:pubsub', obj.staticMethod);
-
         expect(obj.staticMethod).not.toHaveBeenCalled();
     });
     it("should call subscribed function", function() {
-        spyOn(obj, 'staticMethod');
         $.operator.subscribe('test:pubsub', obj.staticMethod);
         $.operator.publish('test:pubsub');
         expect(obj.staticMethod).toHaveBeenCalled();
@@ -47,7 +43,6 @@ describe('operator pub/sub on steroids', function() {
     it("should subscribe a method and unsubscribe the same method", function () {
         // this test is currently failing
         var count = 0;
-        spyOn(obj, 'staticMethod');
         function tester() {
             count++;
         }
@@ -97,7 +92,6 @@ describe('operator pub/sub on steroids', function() {
     });
 
     it("`subWhen`: should subscribe to multiple events and only fire when all events have fired", function () {
-        spyOn(obj, 'staticMethod');
         spyOn(obj, 'staticMethod2');
         spyOn(obj, 'staticMethod3');
         $.operator.subWhen('foo', 'bar').then(obj.staticMethod3);

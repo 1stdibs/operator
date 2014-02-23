@@ -1,68 +1,135 @@
 /*!
- * jQuery Tiny Pub/Sub - v0.X - 11/18/2010
- * http://benalman.com/ - https://gist.github.com/661855
- *
- * Original Copyright (c) 2010 "Cowboy" Ben Alman
  * Dual licensed under the MIT and GPL licenses.
- * http://benalman.com/about/license/
  *
- * Made awesome by Rick Waldron - https://gist.github.com/705311
- * 08/21/2013 - Made less clever, but more useful by Shad Downey
+ * Inspired by Ben Alman's original gist - https://gist.github.com/661855
+ * Contributors:
+ *      - shad downey, github: @andromedado
+ *      - dale tan, github: @hellatan
+ * Copyright 1stdibs.com, Inc. 2013. All Rights Reserved.
  */
 
 (function($){
     "use strict";
-    var o = $({}),
+    var slice = Array.prototype.slice,
+        o = $({}),
         fired = {},
         originalOperator = $.operator,
+        privateOps = {},
+        /** @namespace */
         operator = {};
-    $.operator = operator;
-    $.operator.noConflict = function () {
+
+    /**
+     * Creates an array of event names
+     * @param {string} events A space-delimited string of event names
+     * @returns {Array}
+     */
+    privateOps.getEventNames = function (events) {
+        if (typeof events === 'string') {
+            return events.split(' ');
+        }
+        return [];
+    };
+
+    /**
+     * Returns all the arguments passed into the events
+     * @returns {{args: (*|Function), eventNames: *}}
+     */
+    privateOps.getAllArguments = function () {
+        var args = slice.call(arguments), //this.returnArgs(arguments),
+            events = args[0];
+        return {
+            args: args,
+            eventNames: events
+        };
+    };
+
+    /**
+     * Checks to see if an event was ever fired.  If @onceEver is `true`, it will remove the event automatically
+     * @param {boolean} onceEver
+     * @param {mixed} args 
+     */
+    privateOps.fired = function (onceEver, args) {
+        var args = slice.call(args),
+            // space delimited events
+            eventNames = this.getEventNames(args[0]);
+        if (typeof args[1] === 'function') {
+            $.each(eventNames, function (i, eventName) {
+                if (fired[eventName]) {
+                    args[1].apply(o, fired[eventName]);
+                    if (onceEver) {
+                        //If this was a onceEver, we need to take it back off now
+                        o.off(eventName, args[1]);
+                    }
+                }
+            });
+        }
+    };
+
+    /**
+     * Typical no-conflict mode
+     * @returns {{}}
+     */
+    operator.noConflict = function () {
         $.operator = originalOperator;
         return operator;
     };
-    $.each(
-        {
-            "subscribe" : "on",
-            "ever" : "on",
-            "once" : "one",
-            "onceEver" : "one",
-            "unsubscribe" : "off",
-            "publish" : "trigger"
-        },
-        /**
-         * @param fn {string} method name to attach to the plugin (aka: key)
-         * @param api {string} Mapped jQuery method name that `fn` refers to (aka: value)
-         */
-        function ( fn, api ) {
-            operator[ fn ] = function () {
-                o[ api ].apply( o, arguments );
-                if (typeof arguments[0] === 'string') {
-                    var args = Array.prototype.slice.call(arguments),
-                        // space delimited events
-                        eventNames = args[0].split(' ');
-                    if (api === 'trigger') {
-                        // We need to keep a record of fired events for `ever`'s sake
-                        $.each(eventNames, function (i, eventName) {
-                            fired[eventName] = args;
-                        });
-                    }
-                    if ((fn === 'ever' || fn === 'onceEver') && typeof args[1] === 'function') {
-                        // If we're binding `ever`/`onceEver`, then check the `fired` hash for a past occurrence
-                        $.each(eventNames, function (i, eventName) {
-                            if (fired[eventName]) {
-                                args[1].apply(o, fired[eventName]);
-                                if (fn === 'onceEver') {
-                                    //If this was a onceEver, we need to take it back off now
-                                    o.off(eventName, args[1]);
-                                }
-                            }
-                        });
-                    }
-                }
-            };
-        }
-    );
+
+    /**
+     * Add methods to listen to custom events that have been published
+     * @param {string}      event   The event to subscribe to
+     * @param {function}    fn      The method that will be triggered when the {event} is published
+     */
+    operator.subscribe = function (event, fn) {
+        o.on.apply(o, arguments);
+    };
+
+    /**
+     * Remove the method that was listening to the event.  Anonymous functions cannot be unsubscribed
+     * @param {string}      event   The event to be removed
+     * @param {function}    fn      The method that was originally subscribed to the {event}
+     */
+    operator.unsubscribe = function (event, fn) {
+        o.off.apply(o, arguments);
+    };
+
+    /**
+     * The event to trigger
+     * @param {string}  event   The event to trigger
+     * @param {array}   args    Array of arguments that will be passed along to the subscribers
+     */
+    operator.publish = function (/* event, args */) {
+        var args = arguments,
+            eventNames = privateOps.getEventNames(args[0]);
+        o.trigger.apply(o, args);
+        // We need to keep a record of fired events for `ever`'s sake
+        $.each(eventNames, function (i, eventName) {
+            fired[eventName] = args;
+        });
+    };
+
+    /**
+     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     */
+    operator.ever = function () {
+        o.on.apply(o, arguments);
+        privateOps.fired(false, arguments);
+    };
+
+    /**
+     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     */
+    operator.once = function () {
+        o.one.apply(o, arguments);
+    };
+
+    /**
+     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     */
+    operator.onceEver = function () {
+        o.on.apply(o, arguments);
+        privateOps.fired(true, arguments);
+    };
+
     /**
      * Takes list of publish event names, and returns a promise for
      * when all of them have ever occurred
@@ -89,4 +156,8 @@
         });
         return $.when.apply($, promises);
     };
+
+    // expose this ish
+    $.operator = operator;
+
 })(jQuery);
