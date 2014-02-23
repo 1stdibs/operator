@@ -19,8 +19,8 @@
         operator = {};
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
-     * @param events
+     * Creates an array of event names
+     * @param {string} events A space-delimited string of event names
      * @returns {Array}
      */
     privateOps.getEventNames = function (events) {
@@ -31,7 +31,7 @@
     };
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     * Returns all the arguments passed into the events
      * @returns {{args: (*|Function), eventNames: *}}
      */
     privateOps.getAllArguments = function () {
@@ -44,9 +44,9 @@
     };
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
-     * @param onceEver
-     * @param args
+     * Checks to see if an event was ever fired.  If @onceEver is `true`, it will remove the event automatically
+     * @param {boolean} onceEver
+     * @param {mixed} args 
      */
     privateOps.fired = function (onceEver, args) {
         var args = slice.call(args),
@@ -66,7 +66,7 @@
     };
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     * Typical no-conflict mode
      * @returns {{}}
      */
     operator.noConflict = function () {
