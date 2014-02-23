@@ -11,6 +11,7 @@ describe('operator pub/sub on steroids', function() {
         Klass = function () {};
     Klass.fn = Klass.prototype;
     Klass.fn.staticMethod = function (arg) {
+        console.log('staticmethod: ', arg);
         return arg;
     };
     Klass.fn.staticMethod2 = function (arg) {
@@ -113,6 +114,19 @@ describe('operator pub/sub on steroids', function() {
         expect(count).toBe(1);
         $.operator.publish("test:pubsub2");
         expect(count).toBe(2);
+    });
+
+    it("should apply arguments dynamically", function () {
+        var ret = 0;
+        function applier() {
+            $.operator.publish.apply($.operator, arguments);
+        }
+        function subscriber(e, count) {
+            ret = count;
+        }
+        $.operator.subscribe('apply-test:event', subscriber);
+        applier('apply-test:event', 100);
+        expect(ret).toBe(100);
     });
 
     xit("should work in noConflict mode", function () {
