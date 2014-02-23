@@ -158,6 +158,7 @@
     };
 
     // expose this ish
+    // don't attach via $.fn since a jQuery object is being used as the switchboard
     $.operator = operator;
 
 })(jQuery);

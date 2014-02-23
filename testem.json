@@ -3,6 +3,8 @@
         "tests/lib/jquery.min.js",
         "tests/lib/jasmine-jquery.js",
         "src/jquery.operator.js",
-        "tests/spec/operator_spec.js"
+        "src/jquery.operator-shim.js",
+        "tests/spec/operator_spec.js",
+        "tests/spec/operator_shim_spec.js"
     ]
 }
