@@ -1,0 +1,20 @@
+{
+    "name": "1stdibs/operator",
+    "description": "Pub/sub on steroids",
+    "minimum-stability": "dev",
+    "type": "library",
+    "authors": [
+        {
+            "name" : "1stdibs front-end team",
+            "email": "front-end@1stdibs.com",
+            "homepage": "http://meinmyoffice.com/"
+        }
+    ],
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+    
+}
