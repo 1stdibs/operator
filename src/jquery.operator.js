@@ -44,7 +44,10 @@
     };
 
     /**
-     * Checks to see if an event was ever fired.  If @onceEver is `true`, it will remove the event automatically
+     * Checks to see if an event was ever fired,
+     * if it was, it will then invoke the callback
+     * (assuming a callback was the second argument to the function above)
+     * If @onceEver is `true`, it will remove the event listener after-if firing
      * @param {boolean} onceEver
      * @param {mixed} args 
      */
@@ -112,7 +115,11 @@
     };
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     * A versions of subscribe that can look into the past.
+     * If the event being subscribed to has fired in the past,
+     * invoke the callback with the most recent occurrence
+     * Useful when you don't want to care about the order of script loading
+     * NOTE: This function will always return before invoking the callback [15 millisecond timeout]
      */
     operator.ever = function () {
         o.on.apply(o, arguments);
@@ -120,14 +127,15 @@
     };
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     * Same as `subscribe` except that the callback is invoked at most once
      */
     operator.once = function () {
         o.one.apply(o, arguments);
     };
 
     /**
-     * PLEASE WRITE SOMETHING HERE.  I'M BEING LAZY RIGHT NOW
+     * Same as `ever` except that the callback is invoked at most once
+     * NOTE: This function will always return before invoking the callback [15 millisecond timeout]
      */
     operator.onceEver = function () {
         o.on.apply(o, arguments);
