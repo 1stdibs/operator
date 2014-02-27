@@ -24,6 +24,7 @@ describe('shim tests for operator pub/sub on steroids', function() {
     beforeEach(function () {
         obj = new Klass;
         spyOn(obj, 'staticMethod');
+        jasmine.Clock.useMock();
     });
 
     it("should not call function that is not subscribed", function() {
@@ -62,6 +63,8 @@ describe('shim tests for operator pub/sub on steroids', function() {
         }
         $.publish('test:pubsub');
         $.ever('test:pubsub', tester);
+        expect(count).toBe(0);
+        jasmine.Clock.tick(16);
         expect(count).toBe(1);
         $.publish('test:pubsub');
         expect(count).toBe(2);
@@ -75,6 +78,8 @@ describe('shim tests for operator pub/sub on steroids', function() {
         $.publish('test:pubsub');
         expect(count).toBe(0);
         $.onceEver('test:pubsub', tester);
+        expect(count).toBe(0);
+        jasmine.Clock.tick(16);
         expect(count).toBe(1);
         $.publish('test:pubsub');
         expect(count).toBe(1);
@@ -102,6 +107,7 @@ describe('shim tests for operator pub/sub on steroids', function() {
         $.publish('bar');
         expect(obj.staticMethod).toHaveBeenCalled();
         expect(obj.staticMethod2).toHaveBeenCalled();
+        jasmine.Clock.tick(16);
         expect(obj.staticMethod3).toHaveBeenCalled();
     });
 

@@ -55,7 +55,11 @@
         if (typeof args[1] === 'function') {
             $.each(eventNames, function (i, eventName) {
                 if (fired[eventName]) {
-                    args[1].apply(o, fired[eventName]);
+                    //Release thread so that event binder can
+                    // return before callback is invoked
+                    setTimeout(function () {
+                        args[1].apply(o, fired[eventName]);
+                    }, 15);
                     if (onceEver) {
                         //If this was a onceEver, we need to take it back off now
                         o.off(eventName, args[1]);
