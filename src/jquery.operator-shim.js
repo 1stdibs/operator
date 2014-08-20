@@ -15,6 +15,7 @@
 	        };
 	    });
 	    $.subWhen = $.operator.subWhen;
+        $.getSubscribers = $.operator.getSubscribers;
     }
     
 }(jQuery));

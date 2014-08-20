@@ -10,13 +10,14 @@
 
 (function($){
     "use strict";
-    var slice = Array.prototype.slice,
-        o = $({}),
-        fired = {},
-        originalOperator = $.operator,
-        privateOps = {},
-        /** @namespace */
-        operator = {};
+    var slice = Array.prototype.slice;
+    var o = $({});
+    var fired = {};
+    var originalOperator = $.operator;
+    var privateOps = {};
+    /** @namespace */
+    var operator = {};
+    var subscribers = {};
 
     /**
      * Creates an array of event names
@@ -87,6 +88,11 @@
      * @param {function}    fn      The method that will be triggered when the {event} is published
      */
     operator.subscribe = function (event, fn) {
+        if (!subscribers[event]) {
+            subscribers[event] = 1;
+        } else {
+            subscribers[event] = subscribers[event]++;
+        }
         o.on.apply(o, arguments);
     };
 
@@ -167,6 +173,14 @@
             promises.push(def.promise());
         });
         return $.when.apply($, promises);
+    };
+
+    /**
+     * @param {string} [name] subscriber name
+     * @returns {object|number} Returns a count if `name` is present, otherwise entire list
+     */
+    operator.getSubscribers = function (name) {
+        return subscribers[name] ? subscribers[name] : subscribers;
     };
 
     // expose this ish

@@ -7,8 +7,11 @@
 
 
 describe('operator pub/sub on steroids', function() {
-    var obj,
-        Klass = function () {};
+    'use strict';
+
+    var Klass = function () {};
+    var obj;
+
     Klass.fn = Klass.prototype;
     Klass.fn.staticMethod = function (arg) {
         console.log('staticmethod: ', arg);
@@ -138,6 +141,39 @@ describe('operator pub/sub on steroids', function() {
         applier('apply-test:event', 100);
         expect(ret).toBe(100);
     });
+
+    describe('subscribers list', function () {
+        it('should add an empty subscriber and set it to 1', function () {
+            var subscriber = 'subsy';
+            var subs;
+            $.operator.subscribe(subscriber, function () {});
+
+            subs = $.operator.getSubscribers(subscriber);
+            expect(typeof subs).toBe('number');
+            expect(subs).toBe(1);
+        });
+        it('should get all subscribers', function () {
+            var subscribers = ['subs1', 'subs2', 'subs3'];
+            var i = 0;
+            var len = subscribers.length;
+            var subs;
+            var sub;
+
+            for (i; i < len; i++) {
+                sub = subscribers[i];
+                $.operator.subscribe(sub, function () {});
+            }
+
+            subs = $.operator.getSubscribers();
+
+            expect(typeof subs).toBe('object');
+            expect(subs.subs1).toBeTruthy();
+            expect(subs.subs2).toBeTruthy();
+            expect(subs.subs3).toBeTruthy();
+
+        });
+    });
+
 
     xit("should work in noConflict mode", function () {
 
