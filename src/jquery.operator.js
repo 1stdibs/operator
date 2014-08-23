@@ -91,7 +91,7 @@
         if (!subscribers[event]) {
             subscribers[event] = 1;
         } else {
-            subscribers[event] = subscribers[event]++;
+            subscribers[event] = subscribers[event] + 1;
         }
         o.on.apply(o, arguments);
     };

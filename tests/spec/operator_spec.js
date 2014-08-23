@@ -143,7 +143,8 @@ describe('operator pub/sub on steroids', function() {
     });
 
     describe('subscribers list', function () {
-        it('should add an empty subscriber and set it to 1', function () {
+        it('should add an empty subscriber and set it to 1 then to 5', function () {
+            var i = 1;
             var subscriber = 'subsy';
             var subs;
             $.operator.subscribe(subscriber, function () {});
@@ -151,6 +152,14 @@ describe('operator pub/sub on steroids', function() {
             subs = $.operator.getSubscribers(subscriber);
             expect(typeof subs).toBe('number');
             expect(subs).toBe(1);
+
+            for (i; i < 5; i++) {
+                $.operator.subscribe(subscriber, Klass);
+            }
+
+            subs = $.operator.getSubscribers(subscriber);
+            expect(typeof subs).toBe('number');
+            expect(subs).toBe(5);
         });
         it('should get all subscribers', function () {
             var subscribers = ['subs1', 'subs2', 'subs3'];
