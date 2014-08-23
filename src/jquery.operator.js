@@ -8,12 +8,22 @@
  * Copyright 1stdibs.com, Inc. 2013. All Rights Reserved.
  */
 
-(function($){
+(function (root, factory) {
+    'use strict';
+
+    if (typeof module !== 'undefined') {
+        factory(require('jquery'));
+    } else {
+        factory(root.jQuery);
+    }
+
+
+}(typeof window !== 'undefined' ? window : global, function ($) {
     "use strict";
     var slice = Array.prototype.slice;
+    var originalOperator = $.operator;
     var o = $({});
     var fired = {};
-    var originalOperator = $.operator;
     var privateOps = {};
     /** @namespace */
     var operator = {};
@@ -36,8 +46,8 @@
      * @returns {{args: (*|Function), eventNames: *}}
      */
     privateOps.getAllArguments = function () {
-        var args = slice.call(arguments), //this.returnArgs(arguments),
-            events = args[0];
+        var args = slice.call(arguments);
+        var events = args[0];
         return {
             args: args,
             eventNames: events
@@ -53,9 +63,9 @@
      * @param {mixed} args 
      */
     privateOps.fired = function (onceEver, args) {
-        var args = slice.call(args),
-            // space delimited events
-            eventNames = this.getEventNames(args[0]);
+        args = slice.call(args);
+        // space delimited events
+        var eventNames = this.getEventNames(args[0]);
         if (typeof args[1] === 'function') {
             $.each(eventNames, function (i, eventName) {
                 if (fired[eventName]) {
@@ -91,15 +101,15 @@
         if (!subscribers[event]) {
             subscribers[event] = 1;
         } else {
-            subscribers[event] = subscribers[event]++;
+            subscribers[event] = subscribers[event] + 1;
         }
         o.on.apply(o, arguments);
     };
 
     /**
      * Remove the method that was listening to the event.  Anonymous functions cannot be unsubscribed
-     * @param {string}      event   The event to be removed
-     * @param {function}    fn      The method that was originally subscribed to the {event}
+     * @param {string}      [event]   The event to be removed
+     * @param {function}    [fn]      The method that was originally subscribed to the {event}
      */
     operator.unsubscribe = function (event, fn) {
         o.off.apply(o, arguments);
@@ -107,8 +117,8 @@
 
     /**
      * The event to trigger
-     * @param {string}  event   The event to trigger
-     * @param {array}   args    Array of arguments that will be passed along to the subscribers
+     * @param {string}  [event]   The event to trigger
+     * @param {array}   [args]    Array of arguments that will be passed along to the subscribers
      */
     operator.publish = function (/* event, args */) {
         var args = arguments,
@@ -185,6 +195,9 @@
 
     // expose this ish
     // don't attach via $.fn since a jQuery object is being used as the switchboard
+    // TODO: make it so that this assignment happens outside of factory
     $.operator = operator;
 
-})(jQuery);
+    module.exports = operator;
+
+}));
