@@ -1,0 +1,31 @@
+{
+  "name": "jquery-operator",
+  "version": "1.0.0",
+  "description": "Pub/sub on steroids",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "testem -l phantomjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1stdibs/operator.git"
+  },
+  "keywords": [
+    "1stdibs",
+    "pub/sub",
+    "jquery"
+  ],
+  "author": "1stdibs front-end team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/1stdibs/operator/issues"
+  },
+  "homepage": "https://github.com/1stdibs/operator",
+  "devDependencies": {
+    "jasmine-jquery": "1.5.0",
+    "phantomjs": "^1.9.19",
+    "testem": "^0.9.11"
+  }
+}
