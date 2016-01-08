@@ -1,3 +1,6 @@
+
+**This package is no longer supported. Use at your own risk**
+
 # operator, what's your beef?
 
 pub/sub plugin on steroids
