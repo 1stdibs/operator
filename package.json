@@ -1,6 +1,6 @@
 {
   "name": "jquery-operator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Pub/sub on steroids",
   "main": "./index.js",
   "directories": {
